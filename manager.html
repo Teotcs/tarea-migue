@@ -1,0 +1,205 @@
+<div class="card">
+  <p-card id="card-content-table">
+    <p-toolbar
+      id="table-toolbar"
+      class="justify-content-between"
+      styleClass="mb-4 p-3 bg-black-alpha-90"
+    >
+      <div
+        class="maintenance-title flex justify-content-center align-items-center gap-2"
+      >
+        <p-button
+          id="back-button"
+          icon="pi pi-arrow-left"
+          class="mr-2 btn-blue"
+          (click)="onBack()"
+        ></p-button>
+        <span class="text-200 text-xl">{{ title }}</span>
+      </div>
+      <div class="maintenance-functions flex gap-3">
+        <div class="p-toolbar-group-end">
+          <span class="p-input-icon-left">
+            <i class="pi pi-search"></i>
+            <input
+              id="filter-input"
+              (input)="dt2.filterGlobal($any($event.target).value, 'contains')"
+              pInputText
+              placeholder="Buscar..."
+            />
+          </span>
+        </div>
+        <div class="p-toolbar-group-start">
+          <p-button
+            id="create-button"
+            pTooltip="Crear"
+            tooltipPosition="top"
+            icon="pi pi-plus"
+            class="mr-2 btn-blue"
+            (click)="onCreate()"
+          ></p-button>
+        </div>
+      </div>
+    </p-toolbar>
+
+    <p-table
+      id="maintenance-table"
+      #dt2
+
+      [value]="data"
+      [paginator]="true"
+      [rows]="5"
+      [first]="first"
+      [showCurrentPageReport]="true"
+      [rowsPerPageOptions]="[5, 10, 15]"
+      [globalFilterFields]="getFields()"
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+      styleClass="p-datatable-striped p-datatable-lg"
+      scrollable="true"
+      [scrollHeight]="tableScrollHeigh"
+    >
+      <ng-template class="bg-black-alpha-90" pTemplate="header">
+        <tr>
+          @for(header of headers; track $index){
+          <th pSortableColumn="{{ header.field }}" [style.min-width.px]="15">
+            {{ header.header }}
+            <p-sortIcon field="{{ header.field }}"></p-sortIcon>
+          </th>
+          }
+          <th style="padding-left: 6%;">Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData >
+        <tr>
+          @for(header of headers; track $index){
+          <td [ngClass]="itemId == 9 && rowData.estado == false && $index == 0 ? 'bg-red-100' : ''">
+
+            {{ rowData[header.field] }}
+
+         <ng-container *ngIf="header.field === 'numEmpleado'">
+      <span class="text-200 text-gray-600 block">
+        {{ getEmpleadoCreador(rowData.clienteId) }}
+
+      </span>
+    </ng-container>
+
+          </td>
+          }
+          <td>
+            <div class="btn-maintenance flex gap-2">
+              <p-toast />
+
+
+
+              <ng-template pTemplate="content" let-message>
+                <div
+                  class="flex flex-column align-items-center w-full gap-3 border-bottom-1 surface-border p-3 mb-3"
+                >
+                  <i
+                    [class]="message.icon"
+                    class="text-6xl text-primary-500"
+                  ></i>
+                  <p>{{ message.message }}</p>
+                  <p>Hola</p>
+                </div>
+              </ng-template>
+
+              @if (itemId !== 9) {
+
+
+                <p-button
+                  pTooltip="Editar"
+                  tooltipPosition="left"
+                  id="edit-button"
+                  class="shadow-1 border-round-md-2"
+                  icon="pi pi-pencil"
+                  severity="secondary"
+                  (click)="onEdit(rowData)"
+                />
+
+                <p-button
+                pTooltip="Eliminar"
+                tooltipPosition="right"
+                id="delete-button"
+                class="shadow-1 border-round-md"
+                icon="pi pi-trash"
+                severity="secondary"
+                (click)="confirmDelete($event, rowData)"
+              />
+
+
+              }
+              @if(itemId == 9){
+                @if(rowData.estado == true){
+
+                   <p-button
+
+                  pTooltip="Visualizar"
+                  tooltipPosition="left"
+                  id="ver-seguimiento"
+                  class="shadow-1 border-round-md"
+                  icon="pi pi-eye"
+                  severity="secondary"
+                    (click)="onView(rowData)"
+                ></p-button>
+
+                   <p-button
+                  pTooltip="Editar"
+                  tooltipPosition="left"
+                  id="edit-button"
+                  class="shadow-1 border-round-md"
+                  icon="pi pi-pencil"
+                  severity="secondary"
+                  (click)="onEdit(rowData)"
+                />
+
+                  <p-button
+                  pTooltip="Bloquear"
+                  tooltipPosition="left"
+                  id="block-button"
+                  class="shadow-1 border-round-md"
+                  icon="pi pi-ban"
+                  severity="secondary"
+                  (click)="confirmBlock($event, rowData)"
+                />
+                }@else {
+                  <p-button
+                  pTooltip="Reintegrar"
+                  tooltipPosition="left"
+                  id="edit-button"
+                  class="shadow-1 border-round-md"
+                  icon="pi pi-arrow-left"
+                  severity="secondary"
+                  (click)="reinstateUser(rowData.id)"
+                />
+                }
+              }
+
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+</div>
+
+<app-dialog
+  #dialogEnvironment
+  [headerDialog]="isEditting ? 'Editar ' + title :  'Crear ' + title"
+  [groupIdentification]="itemId"
+  (onSave)="create($event)"
+  (onEdit)="editRecord($event)">
+</app-dialog>
+
+<app-view-dialog
+  [data]="viewDialogData"
+  (close)="displayViewDialog = false"
+  (onView)="viewRecord($event)">
+</app-view-dialog>
+
+
+<p-confirmPopup />
+<p-toast />
+
+<app-dialog-recover-pass #dialogRecoverPass></app-dialog-recover-pass>
+
+ 
