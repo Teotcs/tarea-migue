@@ -1,0 +1,53 @@
+de hecho tengo estos, dime cual es y cual cambiar
+
+ngOnInit(): void {
+    this.injectedService = this.getService(this.itemId);
+
+    this.getAll();
+     this.empleadoService.getEmpleados().subscribe((data) => {
+      this.empleados = data;
+  });
+  }
+
+
+
+getAll(): void {
+    this.injectedService.getAll().subscribe({
+      next: (response: any[]) => {
+        console.log('Respuesta getAll:', response);
+        this.data = response || [];
+      },
+      error: (error: any) => {
+        console.error('Error en getAll:', error);
+
+
+
+
+getAll(): void {
+    this.injectedService.getAll().subscribe({
+      next: (response: any[]) => {
+        console.log('Respuesta getAll:', response);
+        this.data = response || [];
+      },
+      error: (error: any) => {
+        console.error('Error en getAll:', error);
+
+        // Manejo seguro del error para evitar 'Cannot read properties of null'
+        let errorMessage = 'Error al cargar los datos';
+
+        if (error && error.error) {
+          if (error.error.mensaje) {
+            errorMessage = error.error.mensaje;
+          } else if (error.status === 403) {
+            errorMessage = 'No tiene permisos para acceder a estos datos. Verifique que su sesión esté activa y que tenga los permisos necesarios.';
+            console.warn('Error 403 Forbidden: Posible problema de autenticación o permisos');
+          }
+        }
+
+
+
+
+
+
+
+
