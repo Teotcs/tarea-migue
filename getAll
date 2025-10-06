@@ -1,4 +1,229 @@
-getAll(): void {
+@Component({
+  selector: 'app-maintenances-manager',
+  standalone: true,
+  imports: [PrimeModule, DialogComponent, DialogRecoverPassComponent, ViewDialogComponent],
+  templateUrl: './maintenances-manager.component.html',
+  styleUrl: './maintenances-manager.component.scss'
+})
+export class MaintenancesManagerComponent implements OnInit, AfterViewInit {
+  title: string = '';
+  itemId: number = 0;
+  public empleadoService = inject(EmpleadoServiceService)
+
+  empleados: AssociatesInterface[] = [];
+  tableScrollHeigh: string = '400px'
+
+  hasChangePassword: boolean = false;
+  viewDialogData: any = {};
+  displayViewDialog: boolean = false;
+
+  constructor(
+    private cdr: ChangeDetectorRef // Inyectar ChangeDetectorRef
+  ) { }
+
+  calculateTableHeight() {
+    // Obtén el alto de la toolbar (ajusta el ID según tu template)
+    const toolbar = document.getElementById('toolbard-top');
+    const toolbarHeight = toolbar ? toolbar.offsetHeight : 0;
+
+    // Obtén el padding del contenedor (ajusta según tu diseño)
+    const cardPadding = 270;
+
+    // Calcula el alto disponible
+    const availableHeight = window.innerHeight - toolbarHeight - cardPadding;
+
+    // Asigna el valor a tableScrollHeight (con un mínimo de 100px)
+    this.tableScrollHeigh = `${Math.max(availableHeight, 100)}px`;
+  }
+
+  // Después de que la vista se inicialice, calcula el alto
+  ngAfterViewInit() {
+    // Defer the calculation to the next change detection cycle
+    setTimeout(() => {
+      this.calculateTableHeight();
+      this.cdr.detectChanges(); // Forzar detección de cambios después de la actualización
+    }, 0);
+  }
+
+  // Escucha cambios en el tamaño de la ventana
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event) {
+    this.calculateTableHeight();
+  }
+
+
+  @Input()
+  set init(item: any) {
+    this.itemId = item.itemId;
+
+    // Personalización por sección
+    if (item.itemId === 4) {
+      this.title = 'Líder EVC';
+    } else {
+      this.title = item.title;
+    }
+  }
+  @ViewChild(DialogComponent) dialogMaintenances!: DialogComponent
+  @ViewChild(ViewDialogComponent) viewDialogMaintenances!: ViewDialogComponent
+  @Output() back = new EventEmitter<void>();
+
+  private injector = inject(Injector);
+  private confirmationService = inject(ConfirmationService);
+  private messageService = inject(MessageService);
+
+  first = 0;
+  data: EnvironmentInterface[] = [];
+  headers = [
+    { header: '', field: '' },
+    { header: '', field: '' }
+  ]
+
+  private injectedService: any;
+
+  ngOnInit(): void {
+    this.injectedService = this.getService(this.itemId);
+
+    this.getAll();
+    this.empleadoService.getEmpleados().subscribe((data) => {
+      this.empleados = data;
+    });
+  }
+
+  getEmpleadoCreador(clienteId: number | undefined): string {
+    if (!clienteId) return 'Desconocido';
+    const empleado = this.empleados.find(emp => emp.id === clienteId);
+    return empleado ? `${empleado.numEmpleado}` : 'Desconocido';
+  }
+
+
+
+  getService(id: number) {
+    switch (id) {
+      case 1:
+        console.log('Inyectando servicio environment')
+
+        this.headers = [
+          { header: 'Nombre entorno', field: 'nombreEntorno' },
+          { header: 'Usuario que modifica', field: 'nombreUsuario' }
+        ]
+        return this.injector.get(EnvironmentService);
+
+      case 2:
+        console.log('Inyectando servicio Evc')
+
+        this.headers = [
+          { header: 'Nombre EVC', field: 'nombreEvc' },
+          { header: 'Usuario que modifica', field: 'nombreUsuario' },
+          { header: 'Service Manager', field: 'serviceManagerNombre' },
+          // { header: ' Lider Técnico', field: 'LiderEvc' }
+        ]
+        return this.injector.get(EvcService);
+
+      case 3:
+        console.log('Inyectando servicio Grados')
+
+        this.headers = [
+          { header: 'Nombre Grado', field: 'grado' },
+          { header: 'Usuario que modifica', field: 'nombreUsuario' }
+        ]
+        return this.injector.get(GradoService);
+
+      case 4:
+        console.log('Inyectando servicio de Lider tecnico')
+
+        this.headers = [
+          { header: 'Nombre Lider de EVC', field: 'nombre' },
+          { header: 'Correo electrónico', field: 'correo' },
+          { header: 'Usuario que modifica', field: 'nombreUsuario' }
+        ]
+        return this.injector.get(LidertecnicoService);
+
+
+      case 5:
+        console.log('Inyectando servicio profile')
+
+        this.headers = [
+          { header: 'Nombre profile', field: 'nombrePerfil' },
+          { header: 'Usuario que modifica', field: 'nombreUsuario' },
+        ]
+        return this.injector.get(ProfilesService);
+
+      case 6:
+        console.log('Inyectando servicio project manager')
+
+        this.headers = [
+          { header: 'Nombre project manager', field: 'nombrePm' },
+          { header: 'Usuario que modifica', field: 'nombreUsuario' }
+        ]
+        return this.injector.get(ProjectmanagerService);
+      case 7:
+        console.log('Inyectando servicio de service manager')
+
+        this.headers = [
+          { header: 'Nombre service manager', field: 'nombreSm' },
+          { header: 'Usuario que modifica', field: 'nombreUsuario' }
+        ]
+        return this.injector.get(ServiceManagerService);
+      case 8:
+        console.log('Inyectando servicio de semillero')
+
+        this.headers = [
+          { header: 'Nombre semillero', field: 'nombreSemillero' },
+          { header: 'Usuario que modifica', field: 'nombreUsuario' }
+        ]
+        return this.injector.get(SemilleroService);
+
+
+      case 9:
+        console.log("Inyectando servicio de usuarios");
+
+        this.headers = [
+          { header: 'Nombre de usuario', field: 'nombreUsuario' },
+          { header: 'Usuario que modifica', field: 'usuarioModifica' }
+        ]
+        return this.injector.get(userService)
+
+      case 10:
+
+        console.log('Inyectando servicio de won')
+        this.headers = [
+          { header: 'Nombre de won', field: 'numWon' },
+          { header: 'Usuario que modifica', field: 'nombreUsuario' }
+        ]
+        return this.injector.get(WonService);
+
+      case 11:
+        console.log('Inyectando servicio de Linea de conocimiento')
+        this.headers = [
+          { header: 'Nombre de Linea Conocimiento', field: 'nombreLinea' },
+          { header: 'Usuario que modifica', field: 'nombreUsuario' }
+        ]
+        return this.injector.get(lineaConocimientoService);
+      default:
+        throw new Error('ID de servicio no válido')
+    }
+  }
+
+  isViewing: boolean = false
+  isEditting: boolean = false
+  onCreate(): void {
+    this.dialogMaintenances.showDialog("create");
+    this.isEditting = false
+    this.isViewing = false
+  }
+
+  onEdit(data: any): void {
+    this.isEditting = true
+    this.dialogMaintenances.showDialog("edit", data);
+  }
+
+  onView(data: any): void {
+    this.isEditting = false
+    this.isViewing = true
+    this.viewDialogMaintenances.showDialog(data);
+  }
+
+  getAll(): void {
 
     this.injectedService.getAll().subscribe({
 
