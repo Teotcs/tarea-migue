@@ -1,0 +1,375 @@
+<p-dialog
+  id="maintenance-dialog"
+  [header]="headerDialog"
+  [modal]="true"
+  [(visible)]="visible"
+  [style]="{ width: '100%', minWidth: '320px', maxWidth: '600px' }"
+  [contentStyle]="{ 'max-height': '75vh', overflow: 'auto' }"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="true"
+  [baseZIndex]="10000"
+>
+  <form [formGroup]="dialogForm">
+    <!-- ===== Entorno ===== -->
+    @if (groupIdentification == 1) {
+    <div class="flex flex-column mb-5 gap-2">
+      <label for="entorno-name">Nombre</label>
+      <input
+        type="text"
+        pInputText
+        [variant]="'filled'"
+        id="entorno-name"
+        formControlName="entornoName"
+      />
+      <small class="text-xs text-blue-700"
+        >Ingresa el nombre de entorno*.</small
+      >
+    </div>
+    }
+
+    <!-- ===== EVC ===== -->
+    @if (groupIdentification == 2) {
+    <div class="flex flex-column mb-5 gap-2">
+      <label for="evc-name">Nombre</label>
+      <input
+        type="text"
+        pInputText
+        [variant]="'filled'"
+        id="evc-name"
+        formControlName="evcName"
+        style="text-transform: uppercase"
+      />
+      <small class="text-xs text-blue-700">Ingresa el nombre de EVC.</small>
+    </div>
+
+    <div class="flex flex-column mb-5 gap-2">
+      <label for="service-manager">Service Manager</label>
+      <p-dropdown
+        [options]="serviceManagers"
+        optionLabel="nombreSm"
+        optionValue="id"
+        formControlName="serviceManagerId"
+        [style]="{ width: '100%' }"
+        placeholder="Selecciona un Service Manager"
+        appendTo="body"
+      />
+      <small class="text-xs text-blue-700"
+        >Selecciona el Service Manager asociado.</small
+      >
+    </div>
+
+    <div class="flex flex-column mb-5 gap-2">
+      <label for="lider-tecnico">Líder Técnico</label>
+      <p-dropdown
+        [options]="lideresTecnicos"
+        optionLabel="nombre"
+        optionValue="id"
+        formControlName="liderTecnicoId"
+        [style]="{ width: '100%' }"
+        placeholder="Selecciona un Líder Técnico"
+        appendTo="body"
+      />
+      <small class="text-xs text-blue-700"
+        >Selecciona el Líder Técnico asociado.</small
+      >
+    </div>
+    }
+
+    <!-- ===== Grado, Líder Técnico, Perfil, PM, SM, Semillero, WON, Línea de conocimiento ===== -->
+    @if (groupIdentification == 3) {
+    <div class="flex flex-column mb-5 gap-2">
+      <label for="grado-name">Nombre</label>
+      <input
+        type="text"
+        pInputText
+        [variant]="'filled'"
+        id="grado-name"
+        formControlName="gradoName"
+      />
+      <small class="text-xs text-blue-700">Ingresa el nombre del grado.</small>
+    </div>
+    } @if (groupIdentification == 4) {
+    <div class="flex flex-column mb-5 gap-2">
+      <label for="leader-name">Nombre</label>
+      <input
+        type="text"
+        pInputText
+        [variant]="'filled'"
+        id="leader-name"
+        formControlName="liderTecnicoName"
+        (keypress)="soloLetras($event)"
+      />
+      <small class="text-xs text-blue-700"
+        >Ingresa el nombre del líder técnico.</small
+      >
+    </div>
+    <div class="flex flex-column mb-5 gap-2">
+      <label for="leader-email">Correo</label>
+      <input
+        type="email"
+        pInputText
+        [variant]="'filled'"
+        id="leader-email"
+        formControlName="correoLiderTecnico"
+      />
+      <small class="text-xs text-blue-700"
+        >Ingresa el correo del líder técnico.</small
+      >
+    </div>
+    } @if (groupIdentification == 5) {
+    <div class="flex flex-column mb-5 gap-2">
+      <label for="profile-name">Nombre</label>
+      <input
+        type="text"
+        pInputText
+        [variant]="'filled'"
+        id="profile-name"
+        formControlName="perfilName"
+      />
+      <small class="text-xs text-blue-700">Ingresa el nombre del perfil.</small>
+    </div>
+    } @if (groupIdentification == 6) {
+    <div class="flex flex-column mb-5 gap-2">
+      <label for="pm-name">Nombre</label>
+      <input
+        type="text"
+        pInputText
+        [variant]="'filled'"
+        id="pm-name"
+        formControlName="pmName"
+      />
+      <small class="text-xs text-blue-700"
+        >Ingrese el nombre del project manager.</small
+      >
+    </div>
+    } @if (groupIdentification == 7) {
+    <div class="flex flex-column mb-5 gap-2">
+      <label for="sm-name">Nombre</label>
+      <input
+        type="text"
+        pInputText
+        [variant]="'filled'"
+        id="sm-name"
+        formControlName="serviceManagerName"
+      />
+      <small class="text-xs text-blue-700"
+        >Ingrese el nombre del service manager.</small
+      >
+    </div>
+    } @if (groupIdentification == 8) {
+    <div class="flex flex-column mb-5 gap-2">
+      <label for="semillero-name">Nombre</label>
+      <input
+        type="text"
+        pInputText
+        [variant]="'filled'"
+        id="semillero-name"
+        formControlName="semilleroName"
+      />
+      <small class="text-xs text-blue-700"
+        >Ingrese el nombre del semillero.</small
+      >
+    </div>
+    } @if (groupIdentification == 9) {
+
+    <!-- Primera fila -->
+    <div class="flex gap-5 mb-4">
+      <div class="flex flex-column gap-2" style="width: 250px">
+        <label for="usernum">Número empleado</label>
+        <input
+          type="text"
+          pInputText
+          [variant]="'filled'"
+          id="usernum"
+          (input)="onInputNumberOnly($event, 'usernum')"
+          formControlName="usernum"
+        />
+
+        <!-- Error si tiene menos de 6 dígitos -->
+        <small
+          class="text-xs text-red-500"
+          *ngIf="
+            dialogForm.get('usernum')?.touched &&
+            (dialogForm.get('usernum')?.value?.toString()?.length || 0) < 6
+          "
+        >
+          Min. 6 dígitos.
+        </small>
+      </div>
+
+      <div class="flex flex-column gap-2" style="width: 250px">
+        <label for="rol">Roles de acceso</label>
+        <p-dropdown
+          id="drop-create-parents"
+          [options]="roles"
+          optionLabel="nombre"
+          placeholder="Seleccione un rol"
+          formControlName="roll"
+          [style]="{ width: '100%' }"
+          appendTo="body"
+        >
+        </p-dropdown>
+        <small
+          class="text-xs text-red-500"
+          *ngIf="
+            dialogForm.get('roll')?.hasError('required') &&
+            dialogForm.get('roll')?.touched
+          "
+        >
+          Selecciona un rol.
+        </small>
+      </div>
+    </div>
+
+    <!-- Segunda fila -->
+    <div class="flex gap-5 mb-4">
+      <div class="flex flex-column gap-2" style="width: 250px">
+        <label for="username">Nombre de usuario</label>
+        <input
+          type="text"
+          pInputText
+          [variant]="'filled'"
+          id="username"
+          formControlName="username"
+          (keypress)="soloLetras($event)"
+        />
+        <small
+          class="text-xs text-red-500"
+          *ngIf="
+            dialogForm.get('username')?.hasError('required') &&
+            dialogForm.get('username')?.touched
+          "
+        >
+          Nombre de ususario es obligatorio.
+        </small>
+      </div>
+
+      <div class="flex flex-column gap-2" style="width: 250px">
+        <label for="cliente">Cliente</label>
+        <p-dropdown
+          id="drop-cliente"
+          [options]="clientes"
+          optionLabel="nombre"
+          optionValue="id"
+          formControlName="clienteId"
+          [style]="{ width: '100%' }"
+          appendTo="body"
+          placeholder="Seleccione un cliente"
+        />
+        <small
+          class="text-xs text-red-500"
+          *ngIf="
+            dialogForm.get('clienteId')?.hasError('required') &&
+            dialogForm.get('clienteId')?.touched
+          "
+        >
+          Selecciona un cliente.
+        </small>
+      </div>
+    </div>
+
+    <!-- Tercera fila -->
+    <div class="flex gap-5 mb-2">
+      <!-- Contraseña -->
+      <div class="flex flex-column gap-2" style="width: 250px">
+        <label for="password">Contraseña</label>
+        <p-password
+          formControlName="password"
+          [variant]="'filled'"
+          id="password"
+          placeholder="Ingrese su contraseña"
+          [feedback]="false"
+          [toggleMask]="true"
+          [styleClass]="'w-full'"
+        />
+        @if (dialogForm.get('password')?.invalid &&
+        dialogForm.get('password')?.touched) {
+        <small class="text-xs text-red-500"
+          >La contraseña debe tener al menos 6 caracteres.</small
+        >
+        }
+      </div>
+
+      <!-- Confirmar contraseña -->
+      <div class="flex flex-column gap-2" style="width: 250px">
+        <label for="confirmConstrasena">Confirme su contraseña</label>
+        <p-password
+          formControlName="password2"
+          [variant]="'filled'"
+          id="confirmConstrasena"
+          placeholder="Confirme su contraseña"
+          [feedback]="false"
+          [toggleMask]="true"
+          [styleClass]="'w-full'"
+          (blur)="dialogForm.get('password2')?.markAsTouched()"
+          [ngClass]="{
+            'p-invalid':
+              dialogForm.get('password2')?.hasError('passwordMissMatch') &&
+              dialogForm.get('password2')?.touched
+          }"
+        />
+
+        <small
+          class="text-xs text-red-500"
+          *ngIf="
+            dialogForm.get('password2')?.hasError('required') &&
+            dialogForm.get('password2')?.touched
+          "
+        >
+          Confirma la contraseña
+        </small>
+
+        @if ( dialogForm.get('password2')?.hasError('passwordMissMatch') &&
+        dialogForm.get('password2')?.touched ) {
+        <small class="text-xs text-red-500 mt-1"
+          >Las contraseñas no coinciden.</small
+        >
+        }
+      </div>
+    </div>
+    } @if (groupIdentification == 10) {
+    <div class="flex flex-column mb-5 gap-2">
+      <label for="won-name">Nombre</label>
+      <input
+        type="text"
+        pInputText
+        [variant]="'filled'"
+        id="won-name"
+        formControlName="wonName"
+      />
+      <small class="text-xs text-blue-700">Ingrese el nombre del won.</small>
+    </div>
+    } @if (groupIdentification == 11) {
+    <div class="flex flex-column mb-5 gap-2">
+      <label for="line-name">Nombre</label>
+      <input
+        type="text"
+        pInputText
+        [variant]="'filled'"
+        id="line-name"
+        formControlName="lineaConocimientoName"
+      />
+      <small class="text-xs text-blue-700"
+        >Ingresa el nombre de línea de conocimiento.</small
+      >
+    </div>
+    }
+
+    <!-- ===== Botones ===== -->
+    <div class="flex justify-content-end gap-2 mt-5">
+      <p-button
+        label="Cancelar"
+        severity="secondary"
+        (onClick)="visible = false"
+      />
+      <p-button
+        label="Guardar"
+        (onClick)="visible = false; submitForm()"
+        [disabled]="!dialogForm.valid"
+      />
+    </div>
+  </form>
+</p-dialog>
+
+ 
