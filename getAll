@@ -1,3 +1,31 @@
+import { Component, EventEmitter, inject, Injector, Input, Output, ViewChild, AfterViewInit, OnInit, ChangeDetectorRef } from '@angular/core';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { GeneralUtility } from '../../../shared/general-utility';
+import { PrimeModule } from '../../../shared/prime/prime.module';
+import { EnvironmentInterface } from '../../../models/work-environment/environment-interface';
+import { DialogComponent } from "../components/dialog/dialog.component";
+import { ViewDialogComponent } from '../components/view-dialog.component/view-dialog.component';
+import { HostListener } from '@angular/core';
+
+// Services
+import { EnvironmentService } from '../services/environment.service';
+import { ProjectmanagerService } from '../services/projectmanager.service';
+import { ServiceManagerService } from '../services/service-manager.service';
+import { EvcService } from '../services/evc.service';
+import { WonService } from '../services/won.service';
+import { GradoService } from '../services/grado.service';
+import { SemilleroService } from '../services/semillero.service';
+
+import { lineaConocimientoService } from '../services/linea-conocimiento-service.service';
+import { ProfilesService } from '../services/profiles.service';
+import { LidertecnicoService } from '../services/lidertecnico.service';
+import { userService } from '../../login/service/user/user.service';
+import { user } from '../../../models/user';
+import { DialogRecoverPassComponent } from "../../login/components/dialog-recover-pass/dialog-recover-pass.component";
+import { EmpleadoServiceService } from '../../../models/associates/service/empleado.service';
+import { AssociatesInterface } from '../../../models/associates/associates-interface';
+
+
 @Component({
   selector: 'app-maintenances-manager',
   standalone: true,
